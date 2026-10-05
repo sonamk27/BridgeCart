@@ -29,7 +29,8 @@ const solutions = [{
   body: 'One platform, one codebase — each store\'s data stays isolated, so this scales from one shop to a whole chain.'
 }];
 export default function Landing({
-  onGetStarted
+  onGetStarted,
+  onDirectStore
 }) {
   return <div className="min-h-screen bg-[var(--bg)]">
       <header className="flex items-center justify-between px-8 py-5 max-w-6xl mx-auto">
@@ -37,9 +38,14 @@ export default function Landing({
           <div className="w-9 h-9 rounded-lg bg-[var(--teal)] flex items-center justify-center text-lg">🛒</div>
           <span className="font-extrabold text-[18px] text-[var(--navy-deep)]">BridgeCart</span>
         </div>
-        <button onClick={onGetStarted} className="bg-[var(--navy-deep)] text-white text-[13.5px] font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 cursor-pointer">
-          Sign In
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={onDirectStore} className="bg-[var(--teal)] text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:opacity-90 cursor-pointer shadow-sm flex items-center gap-1.5">
+            <span>🌐</span> 3D Store Layout
+          </button>
+          <button onClick={onGetStarted} className="bg-[var(--navy-deep)] text-white text-[13.5px] font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 cursor-pointer">
+            Sign In
+          </button>
+        </div>
       </header>
 
       <section className="max-w-4xl mx-auto text-center px-6 pt-16 pb-20">
@@ -56,9 +62,14 @@ export default function Landing({
           owner controls and a search experience the customer uses — so finding a product in-store is as easy
           as searching for it online.
         </p>
-        <button onClick={onGetStarted} className="bg-[var(--teal)] text-white text-[14.5px] font-bold px-7 py-3.5 rounded-xl hover:bg-[var(--teal-dark)] transition-colors cursor-pointer shadow-md">
-          Get Started →
-        </button>
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          <button onClick={onDirectStore} className="bg-[var(--teal)] text-white text-[14.5px] font-bold px-7 py-3.5 rounded-xl hover:bg-[var(--teal-dark)] transition-colors cursor-pointer shadow-md flex items-center gap-2">
+            <span>🌐</span> Explore 3D Store Layout →
+          </button>
+          <button onClick={onGetStarted} className="border border-[var(--navy-deep)] text-[var(--navy-deep)] bg-white text-[14.5px] font-bold px-7 py-3.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
+            Get Started (Sign In)
+          </button>
+        </div>
       </section>
 
       <section className="max-w-5xl mx-auto px-6 pb-16">

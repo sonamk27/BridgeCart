@@ -64,16 +64,37 @@ function OwnerDashboard({
     </div>;
 }
 
+function getInitialScreen() {
+  if (typeof window === 'undefined') return 'landing';
+  const hash = window.location.hash.toLowerCase();
+  if (hash === '#landing') return 'landing';
+  if (hash === '#login') return 'login';
+  if (hash === '#customer') return 'customer';
+  if (hash === '#setup') return 'setup';
+  if (hash === '#dashboard' || hash === '#layout') return 'dashboard';
+  return 'landing';
+}
+
 function RootRouter() {
   const [isAdmin, setIsAdmin] = useState(() => isAdminRoute());
-  const [screen, setScreen] = useState('landing');
+  const [screen, setScreenState] = useState(() => getInitialScreen());
   const {
     isConfigured
   } = useStoreData();
 
+  const setScreen = (next) => {
+    setScreenState(next);
+  };
+
   useEffect(() => {
     function handleLocation() {
       setIsAdmin(isAdminRoute());
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#landing') setScreenState('landing');
+      else if (hash === '#login') setScreenState('login');
+      else if (hash === '#customer') setScreenState('customer');
+      else if (hash === '#setup') setScreenState('setup');
+      else if (hash === '#dashboard' || hash === '#layout') setScreenState('dashboard');
     }
     window.addEventListener('popstate', handleLocation);
     window.addEventListener('hashchange', handleLocation);
@@ -95,10 +116,16 @@ function RootRouter() {
   }
 
   if (screen === 'landing') {
-    return <Landing onGetStarted={() => setScreen('login')} />;
+    return <Landing onGetStarted={() => setScreen('login')} onDirectStore={() => setScreen('dashboard')} />;
   }
   if (screen === 'login') {
-    return <Login onBack={() => setScreen('landing')} onOwnerLogin={() => setScreen(isConfigured ? 'dashboard' : 'setup')} onCustomerLogin={() => setScreen('customer')} />;
+    return (
+      <Login
+        onBack={() => setScreen('landing')}
+        onOwnerLogin={() => setScreen(isConfigured ? 'dashboard' : 'dashboard')}
+        onCustomerLogin={() => setScreen('customer')}
+      />
+    );
   }
   if (screen === 'setup') {
     return <RackSetup onDone={() => setScreen('dashboard')} />;
@@ -106,7 +133,7 @@ function RootRouter() {
   if (screen === 'customer') {
     return <CustomerPreview onLogout={() => setScreen('landing')} />;
   }
-  return <OwnerDashboard onReconfigure={() => setScreen('setup')} />;
+  return <OwnerDashboard onReconfigure={() => setScreen('setup')} onExit={() => setScreen('landing')} />;
 }
 
 export default function App() {

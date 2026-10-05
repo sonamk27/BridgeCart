@@ -3,7 +3,10 @@ import { useStoreData } from '../context/StoreDataContext';
 import AisleColumn from '../components/AisleColumn';
 import AisleDetailPanel from '../components/AisleDetailPanel';
 import { fetchAisleDetail, sendLayoutSelection } from '../api/layoutApi';
+import SmartStoreNavigator from '../components/SmartStoreNavigator';
+
 const STORE_ID = 'lokmanya-101';
+
 export default function StoreLayout({
   onNavigate,
   onReconfigure
@@ -17,6 +20,7 @@ export default function StoreLayout({
   const [loading, setLoading] = useState(false);
   const [synced, setSynced] = useState(false);
   const [zoomed, setZoomed] = useState(false);
+  const [layoutView, setLayoutView] = useState('navigator');
   function shelvesFor(aisle) {
     return aisle.levels.map(level => {
       const here = products.filter(p => p.aisleId === aisle.id && p.shelfLevel === level);
@@ -45,7 +49,48 @@ export default function StoreLayout({
     setSelectedAisle(null);
     setSynced(false);
   }
-  return <div className="flex gap-5 items-start">
+  return <div className="space-y-4">
+    <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center gap-2" role="group" aria-label="Store layout view">
+        <button
+          onClick={() => setLayoutView('floor-plan')}
+          aria-pressed={layoutView === 'floor-plan'}
+          className={`flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[12.5px] font-semibold transition-all ${
+            layoutView === 'floor-plan'
+              ? 'border-[var(--navy-deep)] bg-[var(--navy-deep)] text-white shadow-sm'
+              : 'border-[var(--border)] bg-white hover:bg-gray-50 text-[var(--ink)]'
+          }`}
+        >
+          <span>📐</span> Floor Plan (2D)
+        </button>
+        <button
+          onClick={() => setLayoutView('navigator')}
+          aria-pressed={layoutView === 'navigator'}
+          className={`flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[12.5px] font-semibold transition-all ${
+            layoutView === 'navigator'
+              ? 'border-[var(--navy-deep)] bg-[var(--navy-deep)] text-white shadow-sm'
+              : 'border-[var(--border)] bg-white hover:bg-gray-50 text-[var(--ink)]'
+          }`}
+        >
+          <span>🌐</span> 3D Store Navigator
+        </button>
+      </div>
+
+      <div className="text-[12px] text-[var(--muted)] flex items-center gap-2">
+        <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Real-time spatial synchronization active</span>
+      </div>
+    </div>
+
+    {layoutView === 'navigator' ? (
+      <div className="rounded-2xl overflow-hidden border border-[var(--border)] bg-white shadow-sm">
+        <SmartStoreNavigator
+          storeId={STORE_ID}
+          storeData={{ aisles, products, storeConfig }}
+          height="calc(100vh - 210px)"
+        />
+      </div>
+    ) : <div className="flex gap-5 items-start">
       <div className="flex-1 min-w-0">
         <div className="bg-white border border-[var(--border)] rounded-xl p-5 mb-4 flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -105,7 +150,8 @@ export default function StoreLayout({
       </div>
 
       <AisleDetailPanel aisle={selectedAisle} shelves={selectedAisle ? shelvesFor(selectedAisle) : []} aisleProducts={selectedAisle ? productsFor(selectedAisle) : []} loading={loading} synced={synced} onClose={handleClose} onEditAisle={() => onNavigate('products')} />
-    </div>;
+    </div>}
+  </div>;
 }
 function Zone({
   label,
